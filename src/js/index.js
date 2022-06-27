@@ -66,7 +66,7 @@ function App() {
   // click edit , remove button
   $("#espresso-menu-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("menu-edit-button")) {
-      const $MenuName = e.target.closest("li").querySelector(".menu-item");
+      const $MenuName = e.target.closest("li").querySelector(".menu-name");
       const updateMenuName = prompt("메뉴를 수정하세요", $MenuName.innerText);
       $MenuName.innerText = updateMenuName;
     }
