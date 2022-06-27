@@ -48,6 +48,7 @@ function App() {
       menuNameTemplate(menuName)
     );
     updateMenuCount();
+    console.log("rrrrr");
     $("#espresso-menu-name").value = "";
   };
   // form 태그 자동 전송 막기
@@ -78,5 +79,6 @@ function App() {
     }
   });
 }
+// 오늘은 재밌따
 
 App();
