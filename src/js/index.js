@@ -7,8 +7,19 @@
 // ㅇ 메뉴가 추가되고 나면, input은 빈 값으로 초기화한다.
 // ㅇ 사용자 입력값이 빈 값이라면 추가되지 않는다.
 
+// TODO 메뉴 수정
+// o 메뉴의 수정 버튼을 눌러 메뉴 이름 수정할 수 있다.
+// o 메뉴 수정시 브라우저에서 제공하는 prompt 인터페이스를 활용한다.
+
+// TODO 메뉴 삭제
+//  메뉴 삭제 버튼을 이용하여 메뉴 삭제할 수 있다.
+//  메뉴 삭제시 브라우저에서 제공하는 confirm 인터페이스를 활용한다.
 function App() {
   const $ = (selector) => document.querySelector(selector);
+  const updateMenuCount = () => {
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount} 개`;
+  };
   const addMenu = () => {
     if ($("#espresso-menu-name").value === "") {
       alert("값을 입력해주세여");
@@ -32,26 +43,39 @@ function App() {
         </li>
         `;
     };
-
     $("#espresso-menu-list").insertAdjacentHTML(
       "beforeend",
       menuNameTemplate(menuName)
     );
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount} 개`;
+    updateMenuCount();
     $("#espresso-menu-name").value = "";
   };
   // form 태그 자동 전송 막기
   $("#espresso-menu-form").addEventListener("submit", (e) => {
     e.preventDefault();
   });
-
+  // add Menu with buttton
   $("#espresso-menu-submit-button").addEventListener("click", addMenu);
+  // add Menu with Enter
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
     if (e.key !== "Enter") {
       return;
     }
     addMenu();
+  });
+  // click edit , remove button
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    if (e.target.classList.contains("menu-edit-button")) {
+      const $MenuName = e.target.closest("li").querySelector(".menu-item");
+      const updateMenuName = prompt("메뉴를 수정하세요", $MenuName.innerText);
+      $MenuName.innerText = updateMenuName;
+    }
+    if (e.target.classList.contains("menu-remove-button")) {
+      if (confirm("정말 삭제하시겠습니까?")) {
+        e.target.closest("li").remove();
+        updateMenuCount();
+      }
+    }
   });
 }
 
