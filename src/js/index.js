@@ -11,14 +11,18 @@
  [o] 메뉴 수정시 브라우저에서 제공하는 prompt 인터페이스를 활용한다.
 
  3. 메뉴 삭제 기능
- [] 메뉴 삭제 버튼을 이용하여 메뉴 삭제할 수 있다.
- [] 메뉴 삭제시 브라우저에서 제공하는 confirm 인터페이스를 활용한다.
+ [o] 메뉴 삭제 버튼을 이용하여 메뉴 삭제할 수 있다.
+ [o] 메뉴 삭제시 브라우저에서 제공하는 confirm 인터페이스를 활용한다.
  
  4. 부가 기능
  [] 총 메뉴 갯수를 count하여 상단에 보여준다.
 */
 const $ = (selector) => document.querySelector(selector);
 function app() {
+  const updateCount = () => {
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
   const addMenu = () => {
     if ($("#espresso-menu-name").value === "") {
       alert("다시 입력해주세요");
@@ -48,9 +52,10 @@ function app() {
       "beforeend",
       menuTemplate(menuName)
     );
-
+    updateCount();
     $("#espresso-menu-name").value = "";
   };
+
   $("#espresso-menu-submit-button").addEventListener("click", () => {
     addMenu();
   });
@@ -80,9 +85,16 @@ function app() {
         "다시 메뉴를 입력해주세요",
         MenuBeforeEdit.innerText
       );
-
       e.target.closest("li").querySelector(".menu-name").innerText =
         MenuAfterEdit;
+    }
+
+    if (e.target.classList.contains("menu-remove-button")) {
+      if (confirm("정말 삭제하시겠습니까? ")) {
+        e.target.closest("li").remove();
+      }
+
+      updateCount();
     }
   });
 }
