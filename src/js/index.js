@@ -15,7 +15,7 @@
  [o] 메뉴 삭제시 브라우저에서 제공하는 confirm 인터페이스를 활용한다.
  
  4. 부가 기능
- [] 총 메뉴 갯수를 count하여 상단에 보여준다.
+ [o] 총 메뉴 갯수를 count하여 상단에 보여준다.
 */
 const $ = (selector) => document.querySelector(selector);
 function app() {
@@ -56,17 +56,32 @@ function app() {
     $("#espresso-menu-name").value = "";
   };
 
+  const editMenu = (e) => {
+    const MenuBeforeEdit = e.target.closest("li").querySelector(".menu-name");
+    const MenuAfterEdit = prompt(
+      "다시 메뉴를 입력해주세요",
+      MenuBeforeEdit.innerText
+    );
+    e.target.closest("li").querySelector(".menu-name").innerText =
+      MenuAfterEdit;
+  };
+
+  const removeMenu = (e) => {
+    if (confirm("정말 삭제하시겠습니까? ")) {
+      e.target.closest("li").remove();
+    }
+    updateCount();
+  };
+  // button add menu
   $("#espresso-menu-submit-button").addEventListener("click", () => {
     addMenu();
   });
 
+  // enter add menu
   $("#espresso-menu-name").addEventListener(
     "keydown",
     ({ key, isComposing }) => {
-      if (isComposing) {
-        return;
-      }
-      if (key !== "Enter") {
+      if (isComposing || key !== "Enter") {
         return;
       }
       addMenu();
@@ -80,21 +95,11 @@ function app() {
   // 메뉴 수정 기능 & 메뉴 삭제 기능 (이벤트 위임 => 여기서 몇개 가능하기 때문)
   $("#espresso-menu-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("menu-edit-button")) {
-      const MenuBeforeEdit = e.target.closest("li").querySelector(".menu-name");
-      const MenuAfterEdit = prompt(
-        "다시 메뉴를 입력해주세요",
-        MenuBeforeEdit.innerText
-      );
-      e.target.closest("li").querySelector(".menu-name").innerText =
-        MenuAfterEdit;
+      editMenu(e);
     }
 
     if (e.target.classList.contains("menu-remove-button")) {
-      if (confirm("정말 삭제하시겠습니까? ")) {
-        e.target.closest("li").remove();
-      }
-
-      updateCount();
+      removeMenu(e);
     }
   });
 }
