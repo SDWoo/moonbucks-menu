@@ -3,7 +3,7 @@ import { $ } from "./utils/dom.js";
  Step 2 요구사항
 
  TODO 1 localStorage 데이터 저장 후 각 카테고리 별메뉴판 관리
- [] localStorage에 메뉴 데이터를 저장한다.
+ [ㅇ] localStorage에 메뉴 데이터를 저장한다.
  [] localStorage에서 메뉴 데이터를 받아온다.
  [] 에스프레소 메뉴판 관리
  [] 프라푸치노 메뉴판 관리
@@ -17,8 +17,17 @@ import { $ } from "./utils/dom.js";
  [] sold-out class를 추가하여 상태를 변경한다.
  [] 품절 상태 메뉴의 마크업
 */
+const store = {
+  setLocalStorage(name) {
+    localStorage.setItem("menu", JSON.stringify(name));
+  },
+  getLocalStorage() {
+    localStorage.getItem("menu");
+  },
+};
 
 function App() {
+  this.menu = [];
   const updateCount = () => {
     const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
@@ -28,12 +37,13 @@ function App() {
       alert("다시 입력해주세요");
       return;
     }
-    const menuCategory = $(".cafe-category-name").dataset.categoryName;
     const menuName = $("#espresso-menu-name").value;
-    const menuTemplate = (menuName) => {
-      return `
+    this.menu.push({ name: menuName });
+    const menuTemplate = this.menu
+      .map((item) => {
+        return `
         <li class="menu-list-item d-flex items-center py-2">
-        <span class="w-100 pl-2 menu-name">${menuName}</span>
+        <span class="w-100 pl-2 menu-name">${item.name}</span>
         <button
           type="button"
           class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -47,12 +57,11 @@ function App() {
         삭제
         </button>
         </li>`;
-    };
+      })
+      .join("");
+    store.setLocalStorage(this.menu);
+    $("#espresso-menu-list").innerHTML = menuTemplate;
 
-    $("#espresso-menu-list").insertAdjacentHTML(
-      "beforeend",
-      menuTemplate(menuName)
-    );
     updateCount();
     $("#espresso-menu-name").value = "";
   };
