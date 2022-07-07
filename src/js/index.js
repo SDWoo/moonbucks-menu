@@ -4,7 +4,7 @@ import { $ } from "./utils/dom.js";
 
  TODO 1 localStorage 데이터 저장 후 각 카테고리 별메뉴판 관리
  [ㅇ] localStorage에 메뉴 데이터를 저장한다.
- [] localStorage에서 메뉴 데이터를 받아온다.
+ [ㅇ] localStorage에서 메뉴 데이터를 받아온다.
  [] 에스프레소 메뉴판 관리
  [] 프라푸치노 메뉴판 관리
  [] 블렌디드 메뉴판 관리
@@ -22,23 +22,14 @@ const store = {
     localStorage.setItem("menu", JSON.stringify(name));
   },
   getLocalStorage() {
-    localStorage.getItem("menu");
+    return JSON.parse(localStorage.getItem("menu"));
   },
 };
 
 function App() {
   this.menu = [];
-  const updateCount = () => {
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount}개`;
-  };
-  const addMenu = () => {
-    if ($("#espresso-menu-name").value === "") {
-      alert("다시 입력해주세요");
-      return;
-    }
-    const menuName = $("#espresso-menu-name").value;
-    this.menu.push({ name: menuName });
+
+  const render = () => {
     const menuTemplate = this.menu
       .map((item) => {
         return `
@@ -59,10 +50,28 @@ function App() {
         </li>`;
       })
       .join("");
-    store.setLocalStorage(this.menu);
     $("#espresso-menu-list").innerHTML = menuTemplate;
-
     updateCount();
+  };
+
+  this.init = () => {
+    this.menu = store.getLocalStorage();
+    render();
+  };
+
+  const updateCount = () => {
+    const menuCount = this.menu.length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
+  const addMenu = () => {
+    if ($("#espresso-menu-name").value === "") {
+      alert("다시 입력해주세요");
+      return;
+    }
+    const menuName = $("#espresso-menu-name").value;
+    this.menu.push({ name: menuName });
+    store.setLocalStorage(this.menu);
+    render();
     $("#espresso-menu-name").value = "";
   };
 
@@ -113,3 +122,4 @@ function App() {
   });
 }
 const app = new App();
+app.init();
