@@ -1,24 +1,24 @@
+import { $ } from "./utils/dom.js";
 /*
-요구사항 step 1
-  1. 메뉴 추가 기능
- [o] 에스프레소 메뉴에 새로운 메뉴를 확인 버튼 으로 추가한다.
- [o] 에스프레소 메뉴에 새로운 메뉴를 엔터키 입력으로 추가한다.
- [o] 메뉴가 추가되고 나면, input은 빈 값으로 초기화한다.
- [o] 사용자 입력값이 빈 값이라면 추가되지 않는다.
- 
- 2. 메뉴 수정 기능
- [o] 메뉴의 수정 버튼을 누르면 수정 한다. (eventListner)
- [o] 메뉴 수정시 브라우저에서 제공하는 prompt 인터페이스를 활용한다.
+ Step 2 요구사항
 
- 3. 메뉴 삭제 기능
- [o] 메뉴 삭제 버튼을 이용하여 메뉴 삭제할 수 있다.
- [o] 메뉴 삭제시 브라우저에서 제공하는 confirm 인터페이스를 활용한다.
- 
- 4. 부가 기능
- [o] 총 메뉴 갯수를 count하여 상단에 보여준다.
+ TODO 1 localStorage 데이터 저장 후 각 카테고리 별메뉴판 관리
+ [] localStorage에 메뉴 데이터를 저장한다.
+ [] localStorage에서 메뉴 데이터를 받아온다.
+ [] 에스프레소 메뉴판 관리
+ [] 프라푸치노 메뉴판 관리
+ [] 블렌디드 메뉴판 관리
+ [] 티바나 메뉴판 관리
+ [] 디저트 메뉴판 관리
+
+
+ [] 페이지에 최초로 접근할 때는 에스프레소 메뉴가 먼저 보이게 한다.
+ [] 품절 버튼을 추가
+ [] sold-out class를 추가하여 상태를 변경한다.
+ [] 품절 상태 메뉴의 마크업
 */
-const $ = (selector) => document.querySelector(selector);
-function app() {
+
+function App() {
   const updateCount = () => {
     const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
@@ -28,6 +28,7 @@ function app() {
       alert("다시 입력해주세요");
       return;
     }
+    const menuCategory = $(".cafe-category-name").dataset.categoryName;
     const menuName = $("#espresso-menu-name").value;
     const menuTemplate = (menuName) => {
       return `
@@ -91,7 +92,6 @@ function app() {
   $("#espresso-menu-form").addEventListener("submit", (e) => {
     e.preventDefault();
   });
-
   // 메뉴 수정 기능 & 메뉴 삭제 기능 (이벤트 위임 => 여기서 몇개 가능하기 때문)
   $("#espresso-menu-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("menu-edit-button")) {
@@ -103,5 +103,4 @@ function app() {
     }
   });
 }
-
-app();
+const app = new App();
