@@ -3,8 +3,8 @@ import { $ } from "./utils/dom.js";
  Step 2 요구사항
 
  TODO 1 localStorage 데이터 저장 후 각 카테고리 별메뉴판 관리
- [] localStorage에 메뉴 데이터를 저장한다.
- [] localStorage에서 메뉴 데이터를 받아온다.
+ [ㅇ] localStorage에 메뉴 데이터를 저장한다.
+ [ㅇ] localStorage에서 메뉴 데이터를 받아온다.
  [] 에스프레소 메뉴판 관리
  [] 프라푸치노 메뉴판 관리
  [] 블렌디드 메뉴판 관리
@@ -17,23 +17,40 @@ import { $ } from "./utils/dom.js";
  [] sold-out class를 추가하여 상태를 변경한다.
  [] 품절 상태 메뉴의 마크업
 */
+const store = {
+  setLocalStorage(name) {
+    localStorage.setItem("menu", JSON.stringify(name));
+  },
+  getLocalStorage() {
+    return JSON.parse(localStorage.getItem("menu"));
+  },
+};
 
 function App() {
-  const updateCount = () => {
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount}개`;
+  this.menu = {
+    espresso: [],
+    frappuccino: [],
+    blended: [],
+    teavana: [],
+    desert: [],
   };
-  const addMenu = () => {
-    if ($("#espresso-menu-name").value === "") {
-      alert("다시 입력해주세요");
-      return;
+
+  this.currentCategory = "espresso";
+  this.init = () => {
+    if (store.getLocalStorage) {
+      this.menu = store.getLocalStorage();
     }
-    const menuCategory = $(".cafe-category-name").dataset.categoryName;
-    const menuName = $("#espresso-menu-name").value;
-    const menuTemplate = (menuName) => {
-      return `
-        <li class="menu-list-item d-flex items-center py-2">
-        <span class="w-100 pl-2 menu-name">${menuName}</span>
+    console.log(store.getLocalStorage);
+    console.log(this.menu[this.currentCategory]);
+    render();
+  };
+
+  const render = () => {
+    const menuTemplate = this.menu[this.currentCategory]
+      .map((item, index) => {
+        return `
+        <li data-menu-id = "${index}"class="menu-list-item d-flex items-center py-2">
+        <span class="w-100 pl-2 menu-name">${item.name}</span>
         <button
           type="button"
           class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -47,24 +64,41 @@ function App() {
         삭제
         </button>
         </li>`;
-    };
-
-    $("#espresso-menu-list").insertAdjacentHTML(
-      "beforeend",
-      menuTemplate(menuName)
-    );
+      })
+      .join("");
+    $("#espresso-menu-list").innerHTML = menuTemplate;
     updateCount();
+  };
+
+  const updateCount = () => {
+    const menuCount = this.menu[this.currentCategory].length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
+
+  const addMenu = () => {
+    if ($("#espresso-menu-name").value === "") {
+      alert("다시 입력해주세요");
+      return;
+    }
+    const menuName = $("#espresso-menu-name").value;
+    console.log(menuName);
+    this.menu[this.currentCategory].push({ name: menuName });
+    store.setLocalStorage(this.menu);
+    render();
     $("#espresso-menu-name").value = "";
   };
 
   const editMenu = (e) => {
     const MenuBeforeEdit = e.target.closest("li").querySelector(".menu-name");
+    const MenuIndex = e.target.closest("li").dataset.index;
     const MenuAfterEdit = prompt(
       "다시 메뉴를 입력해주세요",
       MenuBeforeEdit.innerText
     );
+    this.menu[this.currentCategory][MenuIndex].name = MenuAfterEdit;
     e.target.closest("li").querySelector(".menu-name").innerText =
       MenuAfterEdit;
+    store.setLocalStorage(this.menu);
   };
 
   const removeMenu = (e) => {
@@ -102,5 +136,16 @@ function App() {
       removeMenu(e);
     }
   });
+
+  $("nav").addEventListener("click", (e) => {
+    if (!e.target.classList.contains("cafe-category-name")) {
+      return;
+    }
+    const categoryName = e.target.innerText;
+    this.currentCategory = e.target.dataset.categoryName;
+    $("main div div > h2").innerText = `${categoryName} 메뉴 관리`;
+    render();
+  });
 }
 const app = new App();
+app.init();
